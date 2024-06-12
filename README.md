@@ -1,7 +1,5 @@
 # GitOps demo
 
-## Argo CD Sync Waves
-
 ### Create a k3d cluster or use existing one
 
 ```shell
