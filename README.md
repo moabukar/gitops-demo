@@ -65,6 +65,13 @@ You can either deploy the registry using `kubectl` using
 kubectl apply -f https://raw.githubusercontent.com/moabukar/gitops-demo/main/argocd/sync-waves/registry/registry.yaml
 ```
 
+### Deploy apps reg (optional)
+
+```shell
+kubectl apply -f https://raw.githubusercontent.com/moabukar/gitops-demo/main/apps/registry.yaml
+```
+
+
 You can also use `argocd` if you prefer
 
 ```shell
