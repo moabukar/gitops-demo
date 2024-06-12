@@ -1,0 +1,58 @@
+ingress-nginx:
+  controller:
+    admissionWebhooks:
+      patch:
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: kubernetes.azure.com/mode
+                  operator: In
+                  values:
+                  - system
+        tolerations:
+        - key: CriticalAddonsOnly
+          operator: Exists
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: kubernetes.azure.com/mode
+              operator: In
+              values:
+              - system
+    config:
+      enable-modsecurity: 'true'
+      log-format-escape-json: 'true'
+      log-format-upstream: '{"timestamp": "$time_iso8601", "requestID": "$req_id",
+        "proxyUpstreamName": "$proxy_upstream_name", "proxyAlternativeUpstreamName":
+        "$proxy_alternative_upstream_name", "upstreamStatus": "$upstream_status",
+        "upstreamAddr": "$upstream_addr", "httpRequest": {"requestMethod": "$request_method",
+        "requestUrl": "$host$request_uri", "status": "$status", "requestSize": "$request_length",
+        "responseSize": "$upstream_response_length", "userAgent": "$http_user_agent",
+        "remoteIp": "$remote_addr", "referer": "$http_referer", "latency": "$upstream_response_time
+        s", "protocol": "$server_protocol"}}'
+      modsecurity-snippet: |-
+        SecRuleEngine DetectionOnly
+        SecAuditEngine RelevantOnly
+        SecAuditLogFormat JSON
+        SecAuditLog /dev/stdout
+        Include /etc/nginx/owasp-modsecurity-crs/nginx-modsecurity.conf
+      proxy-body-size: 0
+      proxy-buffer-size: 256k
+      proxy-buffers-number: 4
+    ingressClassResource:
+      default: true
+      enabled: true
+    publishService:
+      enabled: true
+    service:
+      annotations:
+        service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz
+      externalTrafficPolicy: Local
+    tolerations:
+    - key: CriticalAddonsOnly
+      operator: Exists
+    watchIngressWithoutClass: true
