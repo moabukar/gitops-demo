@@ -32,7 +32,7 @@ kubectl get pods -n argocd
 Once everything is running, make Argo CD UI accessible locally.
 
 ```shell
-kubectl -n argocd port-forward svc/argocd-server 8080:443
+kubectl -n argocd port-forward svc/argocd-server 8086:443
 ```
 
 Get the `admin` password:
