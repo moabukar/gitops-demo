@@ -1,0 +1,68 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kubefirst
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  project: default
+  source:
+    repoURL: https://charts.kubefirst.com
+    targetRevision: 2.4.10
+    chart: kubefirst
+    helm:
+      values: |-
+        global:
+          cloudProvider: "k3d"
+          clusterId: "u9m8ap"
+          clusterType: "mgmt"
+          domainName: "kubefirst.dev"
+          gitProvider: "github"
+          installMethod: "helm"
+          kubefirstClient: "<KUBEFIRST_CLIENT>"
+          kubefirstTeam: "false"
+          kubefirstTeamInfo: "<KUBEFIRST_TEAM_INFO>"
+          kubefirstVersion: "v2.4.10"
+          useTelemetry: "true"
+        kubefirst-api-ee:
+          extraEnv:
+            IN_CLUSTER: "true"
+        kubefirst-api:
+          isClusterZero: "false"
+          extraEnv:
+            IN_CLUSTER: "true"
+            CLUSTER_NAME: "kubefirst"
+            ENTERPRISE_API_URL: "http://kubefirst-kubefirst-api-ee.kubefirst.svc.cluster.local"
+        console:
+          isClusterZero: "false"
+          domain: "kubefirst.dev"
+          extraEnv:
+            DISABLE_AUTH: "true"
+          extraEnvSecrets:
+            CLIENT_ID:
+              name: kubefirst-console-secrets
+              key: client_id
+            SECRET_ID:
+              name: kubefirst-console-secrets
+              key: client_secret
+          ingress:
+            enabled: "true"
+            hosts:
+              - host: kubefirst.kubefirst.dev
+                paths:
+                  - path: /
+                    pathType: Prefix
+            tls:
+              - secretName: kubefirst-tls
+                hosts:
+                  - kubefirst.kubefirst.dev
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kubefirst
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
