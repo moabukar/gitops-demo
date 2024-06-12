@@ -9,7 +9,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/fharper/workshops.git
+    repoURL: https://github.com/moabukar/gitops-demo.git
     path: argocd/sync-waves/registry/0-wave
     targetRevision: HEAD
   destination:
